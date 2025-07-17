@@ -1,6 +1,6 @@
 import { ID, OAuthProvider, Query } from "appwrite";
 import { account, database, appwriteConfig } from "~/appwrite/client";
-import { redirect } from "react-router";
+import {data, redirect} from "react-router";
 
 export const getExistingUser = async (id: string) => {
     try {
@@ -101,3 +101,20 @@ export const getUser = async () => {
         return null;
     }
 };
+
+export const getAllUsers = async (limit : number, offset : number) => {
+    try {
+        const {documents: users, total} = await database.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            [Query.limit(limit), Query.offset(offset)]
+        )
+
+        if (total === 0) return {users: [], total}
+
+        return {users, total}
+    } catch (e) {
+        console.error("Error during getAllUsers:", e);
+        return {users: [], total: 0}
+    }
+}
